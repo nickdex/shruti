@@ -1,0 +1,14 @@
+node_modules/
+.shadow-cljs/
+.cpcache/
+public/js/
+target/
+android/.gradle/
+android/local.properties
+*.xcworkspace
+*.xcuserstate
+*.keystore
+*.jks
+.env
+.env.*
+!.env.example

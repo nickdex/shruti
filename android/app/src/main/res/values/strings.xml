@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Shruti</string>
+    <string name="title_activity_main">Shruti</string>
+    <string name="shortcut_record">Record</string>
+    <string name="widget_record">Record with Shruti</string>
+    <string name="package_name">dev.shruti.capture</string>
+    <string name="custom_url_scheme">dev.shruti.capture</string>
+</resources>

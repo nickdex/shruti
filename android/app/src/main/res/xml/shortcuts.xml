@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="record"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_record">
+        <intent
+            android:action="dev.shruti.capture.RECORD"
+            android:targetPackage="dev.shruti.capture"
+            android:targetClass="dev.shruti.capture.MainActivity" />
+    </shortcut>
+</shortcuts>

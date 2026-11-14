@@ -1,0 +1,35 @@
+{
+  "name": "shruti",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A native-first voice capture client for a personal AI assistant.",
+  "type": "module",
+  "scripts": {
+    "dev": "shadow-cljs watch app",
+    "build": "shadow-cljs release app",
+    "test": "shadow-cljs compile test && node target/node-tests.cjs",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run typecheck && npm run test && npm run build",
+    "cap:sync": "npm run build && cap sync",
+    "cap:add:android": "cap add android",
+    "cap:add:ios": "cap add ios",
+    "cap:android": "npm run cap:sync && cap open android",
+    "cap:ios": "npm run cap:sync && cap open ios",
+    "android:doctor": "node scripts/android-device-doctor.mjs",
+    "android:prepare": "npm run cap:sync",
+    "android:install": "node scripts/install-android-debug.mjs",
+    "android:instrument": "node scripts/run-android-instrumented-tests.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.4.3",
+    "@capacitor/core": "8.4.3",
+    "@capacitor/ios": "8.4.3",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.4.3",
+    "shadow-cljs": "3.5.0",
+    "typescript": "5.9.3"
+  }
+}
