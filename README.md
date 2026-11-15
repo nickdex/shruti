@@ -8,6 +8,16 @@ tap → speak → stop → transcript → Smriti → done
 
 It does not manage notes, organize content, search, or run AI.
 
+## Install on a phone (Obtainium)
+
+Release APKs are published on [GitHub Releases](https://github.com/nickdex/shruti/releases) and installed with [Obtainium](https://github.com/ImranR98/Obtainium), which also delivers later updates:
+
+1. Install Obtainium and grant it "Install unknown apps".
+2. **Add App** → paste `https://github.com/nickdex/shruti`.
+3. Install the latest `shruti-<version>.apk`. Obtainium checks the repository for new releases and offers updates in place.
+
+Updates preserve the stored Smriti connection because the API key lives in Android Keystore under the app's signing identity. Do not uninstall to update.
+
 ## Test on Android
 
 See the complete [Android phone guide](docs/android-device-testing.md). In short:
@@ -43,6 +53,7 @@ Browser mode is a local development fallback using IndexedDB and `MediaRecorder`
 - [Architecture, state machine, extensibility, roadmap](docs/architecture.md)
 - [Smriti command API contract](docs/api-contract.md)
 - [Android device testing](docs/android-device-testing.md)
+- [Android release and Obtainium distribution](docs/android-release.md)
 - [Platform integration strategy](docs/platform-integrations.md)
 - [Future native bridge contract](packages/capacitor-shruti-bridge/README.md)
 

@@ -9,6 +9,8 @@ android/local.properties
 *.xcuserstate
 *.keystore
 *.jks
+android/keystore.properties
+dist/
 .env
 .env.*
 !.env.example

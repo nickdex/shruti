@@ -1,6 +1,6 @@
 {
   "name": "shruti",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "A native-first voice capture client for a personal AI assistant.",
   "type": "module",
@@ -18,7 +18,8 @@
     "android:doctor": "node scripts/android-device-doctor.mjs",
     "android:prepare": "npm run cap:sync",
     "android:install": "node scripts/install-android-debug.mjs",
-    "android:instrument": "node scripts/run-android-instrumented-tests.mjs"
+    "android:instrument": "node scripts/run-android-instrumented-tests.mjs",
+    "android:release": "npm run cap:sync && node scripts/build-android-release.mjs"
   },
   "dependencies": {
     "@capacitor/android": "8.4.3",
