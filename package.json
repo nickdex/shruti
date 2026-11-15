@@ -1,6 +1,6 @@
 {
   "name": "shruti",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "A native-first voice capture client for a personal AI assistant.",
   "type": "module",
