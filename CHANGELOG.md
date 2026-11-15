@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- The setup screen takes only the Smriti server host and shows the fixed
+  `/api/command` path as a label; the app appends it. One build can point at a
+  local or production server.
+- Runtime config reads `SHRUTI_CONFIG` through `goog.object`, so advanced
+  compilation no longer blanks the default host and locale.
+
 ## [0.2.0] - 2026-11-15
 
 ### Added

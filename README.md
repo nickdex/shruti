@@ -28,7 +28,7 @@ npm run android:doctor
 npm run android:install
 ```
 
-The first phone launch asks for the HTTPS Smriti command URL and API key. Existing Pebble prototype connections must be configured again. The Android native plugin stores the key encrypted under Android Keystore; it is not bundled into the APK or written to WebView storage.
+The setup screen takes the Smriti server host (default `https://smriti.nikhilwarke.in`) and appends the fixed `/api/command` path, so one build can point at a local or production server. The phone asks for the Smriti API key once. Existing Pebble prototype connections must be configured again. The Android native plugin stores the key encrypted under Android Keystore; it is not bundled into the APK or written to WebView storage.
 
 On Android, long-press the Shruti app icon and tap **Record** to open the app and start recording. The shortcut uses the same microphone permission and capture flow as the main screen.
 

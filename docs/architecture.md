@@ -220,7 +220,7 @@ npm run android:doctor
 npm run android:install
 ```
 
-The phone receives a debug build with no bundled API key. Enter the HTTPS Smriti command URL and API key; the native plugin stores the key in Android Keystore. Existing Pebble connections must be configured again.
+The phone receives a build with no bundled API key. The setup screen takes a Smriti server host and appends the fixed `/api/command` path, which is displayed as a label; only the host and API key are editable. The native plugin stores the key in Android Keystore. Existing Pebble connections must be configured again.
 
 ## Roadmap
 

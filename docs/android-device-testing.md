@@ -37,7 +37,7 @@ npm run android:install
 On the phone:
 
 1. Open **Shruti**.
-2. Enter the HTTPS Smriti URL ending in `/api/command`.
+2. Confirm or edit the **Command URL** host. `/api/command` is shown as a fixed label and is appended by the app, so enter only the host (for example `https://smriti.nikhilwarke.in`, or a local HTTPS tunnel). The native plugin rejects non-HTTPS endpoints.
 3. Enter the Smriti API key once and choose **Save connection**.
 4. Grant microphone permission.
 5. Tap the large button, speak, then tap it again to stop.

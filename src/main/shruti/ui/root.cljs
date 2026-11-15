@@ -5,7 +5,8 @@
             [shruti.application.ports :as ports]
             [shruti.application.sync :as sync]
             [shruti.composition :as composition]
-            [shruti.domain.capture :as capture]))
+            [shruti.domain.capture :as capture]
+            [shruti.infra.smriti-command :as smriti-command]))
 
 (defn- vibrate! []
   (when-let [vibrate (some-> js/navigator .-vibrate)]
@@ -24,18 +25,18 @@
 (defn- error-message [error]
   (or (.-message error) "Recording could not start. Check microphone permission and try again."))
 
-(defn- default-webhook-url [system]
-  (get-in system [:config :default-webhook-url]))
+(defn- default-server-url [system]
+  (get-in system [:config :server-url]))
 
 (defn- delivery-configured? [!model]
   (= :configured (:delivery-state @!model)))
 
 (defn- apply-delivery-status! [system !model {:keys [configured? webhook-url]}]
   (let [configured? (true? configured?)
-        webhook-url (or (not-empty webhook-url) (default-webhook-url system))]
+        saved-host (not-empty (smriti-command/base-url webhook-url))]
     (swap! !model assoc
            :delivery-state (if configured? :configured :needs-setup)
-           :webhook-url webhook-url
+           :server-url (or saved-host (default-server-url system))
            :setup-error nil
            :message (if (contains? #{:starting :recording :saving} (:phase @!model))
                       (:message @!model)
@@ -68,10 +69,11 @@
                 :setup-error (error-message error))))))
 
 (defn- configure-delivery! [system !model]
-  (let [{:keys [webhook-url bearer-token]} @!model]
+  (let [{:keys [bearer-token]} @!model
+        endpoint (smriti-command/endpoint-url (:server-url @!model))]
     (cond
-      (not (seq (or webhook-url "")))
-      (swap! !model assoc :setup-error "Enter the Smriti command URL.")
+      (not (seq endpoint))
+      (swap! !model assoc :setup-error "Enter the Smriti server URL.")
 
       (not (seq (or bearer-token "")))
       (swap! !model assoc :setup-error "Enter the Smriti API key.")
@@ -80,7 +82,7 @@
       (do
         (swap! !model assoc :delivery-state :saving-setup :setup-error nil)
         (-> (ports/configure-delivery! (:delivery-configuration system)
-                                       {:webhook-url webhook-url
+                                       {:webhook-url endpoint
                                         :bearer-token bearer-token})
             (.then
              (fn [status]
@@ -207,7 +209,7 @@
        "Connection"]]]))
 
 (defn- setup-screen [system !model]
-  (let [{:keys [delivery-state webhook-url bearer-token setup-error]} @!model
+  (let [{:keys [delivery-state server-url bearer-token setup-error]} @!model
         saving? (= :saving-setup delivery-state)
         android? (= :android (get-in system [:config :platform]))]
     [:section.setup-screen
@@ -221,15 +223,20 @@
       {:on-submit (fn [event]
                     (.preventDefault event)
                     (configure-delivery! system !model))}
-      [:label.setup-label
-       "Command URL"
+      [:div.setup-field
+       [:label.setup-label-text {:for "shruti-server-url"} "Command URL"]
        [:input.setup-input
-        {:type "url"
+        {:id "shruti-server-url"
+         :type "url"
          :input-mode "url"
          :autocomplete "url"
          :disabled (not android?)
-         :value (or webhook-url "")
-         :on-change #(swap! !model assoc :webhook-url (.. % -target -value))}]]
+         :placeholder "https://smriti.example.com"
+         :value (or server-url "")
+         :on-change #(swap! !model assoc :server-url (.. % -target -value))}]
+       [:p.setup-url-hint
+        [:span "Posts to"]
+        [:code.setup-url-path smriti-command/command-path]]]
       [:label.setup-label
        "Smriti API key"
        [:input.setup-input
@@ -262,7 +269,7 @@
                !model (r/atom {:phase :ready
                                 :message "Checking secure delivery…"
                                 :delivery-state :checking
-                                :webhook-url (default-webhook-url system)
+                                :server-url (default-server-url system)
                                 :request nil})
                startup-status (load-delivery-status! system !model)
                shortcut-listener (listen-for-record-shortcut! system !model)]

@@ -34,3 +34,29 @@
   (is (nil? (command/capture->command
              (assoc request :content {:type :audio
                                       :audio {:asset-id "local"}})))))
+
+(deftest appends-the-fixed-command-path-to-an-entered-host
+  (testing "the setup screen collects a host; the path is fixed"
+    (is (= "https://smriti.example.com/api/command"
+           (command/endpoint-url "https://smriti.example.com")))
+    (is (= "https://smriti.example.com/api/command"
+           (command/endpoint-url "https://smriti.example.com/")))
+    (is (= "http://10.0.2.2:8080/api/command"
+           (command/endpoint-url "http://10.0.2.2:8080"))))
+  (testing "an already complete endpoint is not doubled"
+    (is (= "https://smriti.example.com/api/command"
+           (command/endpoint-url "https://smriti.example.com/api/command")))
+    (is (= "https://smriti.example.com/api/command"
+           (command/endpoint-url "  https://smriti.example.com/api/command/  "))))
+  (testing "a blank entry stays blank so setup can reject it"
+    (is (= "" (command/endpoint-url "")))
+    (is (= "" (command/endpoint-url nil)))))
+
+(deftest shows-the-host-without-the-fixed-path
+  (is (= "https://smriti.example.com"
+         (command/base-url "https://smriti.example.com/api/command")))
+  (is (= "http://localhost:8080"
+         (command/base-url "http://localhost:8080/api/command")))
+  (is (= "https://smriti.example.com"
+         (command/base-url "https://smriti.example.com")))
+  (is (= "" (command/base-url ""))))

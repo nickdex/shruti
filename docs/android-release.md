@@ -15,6 +15,17 @@ without a second number to maintain.
 Bump the version, update `CHANGELOG.md`, and rebuild. Do not edit
 `build.gradle` for a release.
 
+## Fixed command path
+
+Smriti's command API path `/api/command` never changes, so the app owns it:
+`shruti.infra.smriti-command/command-path` is shown as a label beside the host
+field and appended when the endpoint is built. The setup screen edits only the
+server host, which lets one build point at a local tunnel or production without
+retyping the path. `public/config.js` supplies the default host.
+
+The native transport still requires HTTPS and rejects credentials, query
+strings, and fragments, so a local server needs an HTTPS tunnel or certificate.
+
 ## Signing key
 
 The release key lives outside the repository:

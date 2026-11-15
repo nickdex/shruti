@@ -16,10 +16,13 @@
                "web"))))
 
 (defn runtime-config []
-  (let [config (or (.-SHRUTI_CONFIG js/window) #js {})]
-    {:default-webhook-url (or (.-webhookUrl config) "")
-     :locale (or (.-locale config) "und")
-     :client (or (.-client config) "shruti")
+  ;; SHRUTI_CONFIG comes from the plain-JS public/config.js, so read it with
+  ;; goog.object: advanced compilation renames `.-serverUrl`-style property
+  ;; access unless an extern exists, which silently yielded empty values.
+  (let [config (or (gobj/get js/window "SHRUTI_CONFIG") #js {})]
+    {:server-url (or (gobj/get config "serverUrl") "")
+     :locale (or (gobj/get config "locale") "und")
+     :client (or (gobj/get config "client") "shruti")
      :platform (platform)}))
 
 (defn- voice-capture [{:keys [platform]}]
@@ -28,8 +31,8 @@
     (recorder/create)))
 
 (defn make-system []
-  (let [{:keys [default-webhook-url] :as config} (runtime-config)
-        delivery (smriti-command/create default-webhook-url)]
+  (let [{:keys [server-url] :as config} (runtime-config)
+        delivery (smriti-command/create server-url)]
     {:config config
      :store (store/create)
      :recorder (voice-capture config)
