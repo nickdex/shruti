@@ -9,14 +9,14 @@ JSON payload; it does not choose a command or interpret its fields.
   "command/name": "journal/create-entry",
   "text": "Remember that we need 20kg potatoes tomorrow.",
   "created-at": "2026-07-27T12:30:00.000Z",
-  "tags": ["shruti"]
+  "tags": ["shruti", "todo"]
 }
 ```
 
 The final transcript becomes `text`. When available, the capture time is
 sent as an offset-bearing `created-at`; Smriti derives its Day in its own
 zone. If no capture time is available the command uses its normal current-time
-default. Shruti adds the `shruti` Tag and does not upload audio.
+default. Shruti adds the `shruti` and `todo` Tags and does not upload audio.
 
 Smriti validates and authorizes commands as the API key's User. The key is
 not restricted to a command allowlist: protect it as a full User credential.

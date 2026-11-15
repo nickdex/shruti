@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Entries delivered to Smriti now carry the `todo` Tag alongside `shruti`.
+
 ## [0.1.0] - 2026-11-14
 
 ### Added

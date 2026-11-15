@@ -13,7 +13,7 @@
 (deftest maps-a-capture-to-a-journal-create-entry-command
   (is (= {"command/name" "journal/create-entry"
           "text" "Buy 20kg potatoes tomorrow."
-          "tags" ["shruti"]
+          "tags" ["shruti" "todo"]
           "created-at" "2026-07-27T12:30:00.000Z"}
          (command/capture->command request))))
 

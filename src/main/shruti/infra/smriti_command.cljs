@@ -25,7 +25,7 @@
   (when-let [text (final-text request)]
     (cond-> {"command/name" "journal/create-entry"
              "text" text
-             "tags" ["shruti"]}
+             "tags" ["shruti" "todo"]}
       (not (str/blank? (str (:occurred-at request))))
       (assoc "created-at" (:occurred-at request)))))
 
