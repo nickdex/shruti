@@ -57,6 +57,6 @@ Browser mode is a local development fallback using IndexedDB and `MediaRecorder`
 - [Platform integration strategy](docs/platform-integrations.md)
 - [Future native bridge contract](packages/capacitor-shruti-bridge/README.md)
 
-## Current limitation worth knowing
+## Delivery retries
 
-Smriti's command API does not deduplicate captures. A retry after an ambiguous network failure can create a duplicate Entry. Details are in the [API contract](docs/api-contract.md#current-idempotency-limitation).
+Smriti deduplicates retries by User and capture ID. A changed retry after acceptance reports a conflict; see the [API contract](docs/api-contract.md#idempotent-delivery).

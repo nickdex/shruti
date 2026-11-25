@@ -64,7 +64,7 @@ This runs the small host instrumentation smoke test. It does not replace the man
 | No device listed | Enable USB debugging, accept the computer's authorization dialog, then run `adb devices -l`. |
 | Speech recognition unavailable | Enable or install a system speech-recognition service; Shruti surfaces the Android error instead of fabricating a transcript. |
 | `401` or `403` from Smriti | Tap **Connection** at the bottom of Shruti, then enter the current API key. |
-| Duplicate entry after a network timeout | Smriti does not deduplicate capture retries; see [the API contract](api-contract.md#current-idempotency-limitation). |
+| Changed retry reports a conflict | The original capture was already accepted. See [idempotent delivery](api-contract.md#idempotent-delivery); send as a new entry only when intended. |
 
 ## Current scope
 

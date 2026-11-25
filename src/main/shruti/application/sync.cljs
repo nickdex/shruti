@@ -8,10 +8,20 @@
   (-> (ports/put-capture! store request)
       (.then (fn [_] request))))
 
-(defn- result->capture [request result]
+(defn result->capture
+  "Apply one delivery result to its capture.
+
+   `:conflict` is not a failure to retry: Smriti proved this capture id was
+   already accepted but the payload changed. The message keeps its text and
+   destination, is excluded from automatic delivery, and waits for an
+   explicit decision (reassign a failed message, retry the identical
+   payload, or send as a new entry). Retryable failures keep the queue.
+   Authentication failures stay visible until the key is fixed."
+  [request result]
   (case (:kind result)
     :accepted (capture/accept request (:receipt result))
     :duplicate (capture/accept request (:receipt result))
+    :conflict (capture/conflict request (:error result))
     :auth-required (capture/block-auth request (:error result))
     :rejected (capture/reject request (:error result))
     :retryable (capture/schedule-retry request (now-ms) (js/Math.random)

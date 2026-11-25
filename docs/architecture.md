@@ -53,7 +53,7 @@ The native transport avoids a cross-origin WebView request, so Smriti does not n
                     :receipt nil}}}
 ```
 
-The stable UUID is allocated before capture begins and retained across retries. Smriti's command API does not deduplicate it.
+The stable UUID is allocated before capture begins and retained across retries. Smriti deduplicates it per User.
 
 ## State machine
 
@@ -176,7 +176,6 @@ What remains before a production reliability claim:
 - Replace IndexedDB on device with app-private SQLite plus file references.
 - Add native background delivery (`WorkManager` on Android and background `URLSession` on iOS).
 - Add crash-safe native ingress for widget, share, shortcut, and tile sources.
-- Add server-side capture-ID deduplication in Smriti. Until then, delivery is at-least-once and a timeout after a successful server write can create a duplicate.
 
 ## Audio and transcription
 
@@ -225,8 +224,7 @@ The phone receives a build with no bundled API key. The setup screen takes a Smr
 ## Roadmap
 
 1. Finish the Android test slice: validate the real phone flow and add native tests.
-2. Add Smriti capture-ID receipt deduplication before relying on automatic retries.
-3. Replace the WebView store with Android SQLite, private media, and `WorkManager`.
-4. Add Android share text, dynamic shortcut, widget, Quick Settings tile, and notification re-entry through the same inbox.
-5. Build iOS App Group ingress, Share Extension, App Shortcuts, and background delivery.
-6. Add audio assets, silence detection, streaming, and alternate transcription only when the backend contract can accept them.
+2. Replace the WebView store with Android SQLite, private media, and `WorkManager`.
+3. Add Android share text, dynamic shortcut, widget, Quick Settings tile, and notification re-entry through the same inbox.
+4. Build iOS App Group ingress, Share Extension, App Shortcuts, and background delivery.
+5. Add audio assets, silence detection, streaming, and alternate transcription only when the backend contract can accept them.
