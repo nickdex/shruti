@@ -7,7 +7,8 @@
             [shruti.application.sync :as sync]
             [shruti.composition :as composition]
             [shruti.domain.capture :as capture]
-            [shruti.infra.smriti-command :as smriti-command]))
+            [shruti.infra.smriti-command :as smriti-command]
+            [shruti.ui.auto-send :as auto-send]))
 
 (def ^:private delivery-poll-ms 15000)
 
@@ -65,9 +66,13 @@
     (:quick-picks model)))
 
 (defn- select-destination! [!model group-id]
+  ;; Any destination interaction cancels auto-send: changing the audience
+  ;; must never race an automatic submission.
+  (auto-send/cancel! !model)
   (swap! !model assoc :destination-group-id group-id))
 
 (defn- toggle-destination! [!model group-id]
+  (auto-send/cancel! !model)
   (swap! !model update :destination-group-id
          (fn [current] (when-not (= current group-id) group-id))))
 
@@ -301,6 +306,14 @@
                     :draft-text (capture-text sealed))
              (scroll-to-review!)
              (refresh-captures! system !model)
+             ;; The countdown starts only after the review is saved locally
+             ;; and displayed, so the recording stays recoverable. A blank
+             ;; transcript never enters the countdown.
+             (when (auto-send/sendable-transcript? (capture-text sealed))
+               (auto-send/start! !model
+                                 (fn [review-id]
+                                   (when (= review-id (:review-id @!model))
+                                     (send-review! system !model)))))
              sealed))
           (.catch (fn [error]
                     (swap! !model assoc :phase :error :message (error-message error))))))
@@ -323,6 +336,8 @@
             (.catch (fn [_] nil)))))))
 
 (defn- edit-review-text! [system !model text]
+  ;; Touching the transcript cancels the countdown before editing.
+  (auto-send/cancel! !model)
   (swap! !model assoc :draft-text text)
   (when-let [timer (:draft-timer @!model)]
     (js/clearTimeout timer))
@@ -348,6 +363,7 @@
         (if (nil? queued)
           (swap! !model assoc :message "This recording cannot be sent as it stands.")
           (do
+            (auto-send/cancel! !model)
             (clear-draft-timer! !model)
             (swap! !model assoc
                    :sending? true
@@ -382,6 +398,7 @@
   (let [review (find-capture @!model (:review-id @!model))]
     (if review
       (do
+        (auto-send/cancel! !model)
         (clear-draft-timer! !model)
         (swap! !model assoc
                :review-id nil
@@ -546,7 +563,8 @@
         [:button.dest-pill.all-groups
          {:type "button"
           :aria-expanded (str (boolean show-all-groups?))
-          :on-click #(swap! !model update :show-all-groups? not)}
+          :on-click #(do (auto-send/cancel! !model)
+                         (swap! !model update :show-all-groups? not))}
          (if show-all-groups? "Fewer Groups" "All Groups")])]
      (all-groups-panel @!model destination-group-id
                        (fn [group-id] (toggle-destination! !model group-id)))
@@ -563,9 +581,14 @@
        [:p.groups-note.error groups-error])]))
 
 (defn- review-card [system !model]
-  (let [{:keys [draft-text sending?]} @!model
-        sendable? (and (not sending?) (not (str/blank? (str draft-text))))]
+  (let [{:keys [draft-text sending? auto-send]} @!model
+        sendable? (and (not sending?) (not (str/blank? (str draft-text))))
+        counting? (auto-send/countdown? @!model)]
+    ;; Touching anywhere in the review, including the transcript and Discard,
+    ;; cancels the countdown. The Send button's own activation still sends.
     [:section.review-card
+     {:on-pointer-down #(auto-send/cancel! !model)
+      :style {:--auto-send-duration-ms (str auto-send/duration-ms "ms")}}
      [:div.review-heading
       [:h2.review-title "Review before sending"]
       [:span.review-badge "Not sent"]]
@@ -575,14 +598,20 @@
        :value (or draft-text "")
        :placeholder "What did you say?"
        :on-change #(edit-review-text! system !model (.. % -target -value))}]
-     [:p.review-hint "Correct anything the recognizer missed. Nothing is shared until you press Send."]
+     [:p.review-hint
+      (if counting?
+        "Sending automatically soon. Touch anything here to keep it unsent."
+        "Correct anything the recognizer missed. Nothing is shared until you press Send.")]
      [:div.review-actions
       [:button.review-action.primary
        {:type "button"
+        :class (when counting? "counting")
         :disabled (not sendable?)
         :aria-label "Send this message"
         :on-click #(send-review! system !model)}
-       "Send"]
+       (when counting?
+         [:span.send-fill {:aria-hidden true}])
+       [:span.send-label "Send"]]
       [:button.review-action.secondary
        {:type "button"
         :disabled sending?
@@ -747,13 +776,15 @@
     [:p.capture-status "Checking secure delivery…"]]])
 
 (defn- watch-visibility!
-  "Coming back to the app refreshes cached Groups and resumes due delivery."
+  "Coming back to the app refreshes cached Groups and resumes due delivery.
+   Leaving the app cancels auto-send: a hidden review never submits."
   [system !model]
   (let [handler (fn [_]
-                  (when (and (= "visible" (.-visibilityState js/document))
-                             (= :configured (:delivery-state @!model)))
-                    (load-groups! system !model)
-                    (sync-now! system !model)))]
+                  (if (= "visible" (.-visibilityState js/document))
+                    (when (= :configured (:delivery-state @!model))
+                      (load-groups! system !model)
+                      (sync-now! system !model))
+                    (auto-send/cancel! !model)))]
     (.addEventListener js/document "visibilitychange" handler)
     handler))
 
@@ -796,5 +827,6 @@
     (finally
       (js/clearInterval delivery-timer)
       (.removeEventListener js/document "visibilitychange" visibility-handler)
+      (auto-send/cancel! !model)
       (when-let [timer (:draft-timer @!model)]
         (js/clearTimeout timer)))))

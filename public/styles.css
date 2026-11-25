@@ -329,6 +329,30 @@ button { font: inherit; }
   gap: 10px;
 }
 
+/* Auto-send countdown: a contrasting fill grows left to right inside the
+   Send button while the label stays readable and the button operable. */
+.review-action.primary { position: relative; overflow: hidden; }
+
+.send-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: rgb(255 255 255 / 42%);
+  animation: send-fill-grow var(--auto-send-duration-ms, 3000ms) linear forwards;
+  pointer-events: none;
+}
+
+@keyframes send-fill-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.send-label { position: relative; }
+
+@media (prefers-reduced-motion: reduce) {
+  .send-fill { animation: none; transform: scaleX(1); }
+}
+
 .review-action,
 .pending-action {
   min-height: 48px;

@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Auto-send experiment: a successfully recorded, non-empty transcript is
+  submitted automatically three seconds after its review is saved and shown.
+  A fill grows left to right inside the Send button during the countdown.
+  Sending manually, touching the review, changing the destination, or leaving
+  the app cancels the countdown; cancelled and restored recordings still
+  require explicit Send or Discard.
+
 ## [0.3.0] - 2026-11-15
 
 ### Changed

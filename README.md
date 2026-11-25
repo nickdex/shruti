@@ -3,7 +3,7 @@
 Shruti is a deliberately tiny native-first voice-capture client for a personal assistant. Its Android test path sends final spoken transcripts to Smriti's command API:
 
 ```text
-tap → speak → stop → transcript → Smriti → done
+tap → speak → stop → transcript → review → auto-send (3s, cancellable) → Smriti → done
 ```
 
 It does not manage notes, organize content, search, or run AI.

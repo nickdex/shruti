@@ -23,8 +23,11 @@ fields.
 }
 ```
 
-- `text` is the reviewed transcript, trimmed. It is frozen when the User
-  presses Send; later edits cannot change a submitted message.
+- `text` is the reviewed transcript, trimmed. It is frozen when the message
+  is submitted; later edits cannot change a submitted message. Submission
+  happens at Send, which is either the User's press or the automatic
+  submission of the three-second auto-send experiment for a newly finalized,
+  non-empty transcript.
 - `created-at` is the original occurred-at instant when available. Smriti
   derives its Day in its own zone. If no capture time is available the
   command uses its normal current-time default.

@@ -89,6 +89,12 @@ Invariants:
 2. Shared intake allocates a UUID and persists a recording-state request.
 3. The Android speech adapter produces a final transcript when the user stops.
 4. The request becomes transcript-only `:text`, ready, and queued in one local update.
+   It is then shown for review. For a newly finalized, non-empty transcript the
+   auto-send experiment starts a three-second countdown that submits the
+   reviewed text and destination automatically at expiry, using the same Send
+   operation. Any other touch in the review, any destination interaction,
+   backgrounding or closing the app cancels the countdown; the recording then
+   waits for manual Send or Discard and is never auto-submitted after restore.
 5. Sync claims due captures, requests opaque auth material, and asks the configured transport to deliver.
 6. The native Smriti adapter creates multipart fields: `transcription`, `recordedAt`, `client`, and `captureId`.
 7. A `2xx` result becomes an acceptance receipt; retryable failures retain the queued request.
