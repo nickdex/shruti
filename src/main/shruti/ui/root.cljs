@@ -288,6 +288,8 @@
        (.scrollIntoView element #js {:behavior "smooth" :block "center"})))
    60))
 
+(declare ^:private send-review!)
+
 (defn stop-recording! [system !model]
   (if-let [request (:request @!model)]
     (do
