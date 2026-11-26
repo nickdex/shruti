@@ -1,8 +1,13 @@
 # Changelog
 
-## [Unreleased]
+## [0.4.0] - 2026-11-26
 
 ### Added
+
+- Group destination quick picks and an editable, locally persisted review
+  before sending. Pending messages remain available for retry or reassignment.
+- Secure Group discovery, offline selection and capture-ID deduplication with
+  Smriti. Accepted messages retain their delivery receipts.
 
 - Auto-send experiment: a successfully recorded, non-empty transcript is
   submitted automatically three seconds after its review is saved and shown.
@@ -10,6 +15,10 @@
   Sending manually, touching the review, changing the destination, or leaving
   the app cancels the countdown; cancelled and restored recordings still
   require explicit Send or Discard.
+
+### Changed
+
+- Private capture commands omit `group-id`.
 
 ## [0.3.0] - 2026-11-15
 
