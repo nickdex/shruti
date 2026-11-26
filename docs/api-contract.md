@@ -31,10 +31,10 @@ fields.
 - `created-at` is the original occurred-at instant when available. Smriti
   derives its Day in its own zone. If no capture time is available the
   command uses its normal current-time default.
-- `group-id` is the destination Group's stable id, or `""` for Private. One
-  Entry has at most one Group. At Send, the selection is snapshotted with the
-  text, so changing the session's active destination cannot redirect an
-  already submitted message.
+- `group-id` is the destination Group's stable id and is omitted for Private.
+  One Entry has at most one Group. At Send (press or auto-send), the selection
+  is snapshotted with the text, so changing the session's active destination
+  cannot redirect an already submitted message.
 - `client-request-id` is Shruti's capture id. It is the idempotency key and
   is scoped by Smriti to the authenticated User. Two separate captures with
   identical text still carry different ids and remain separate Entries.

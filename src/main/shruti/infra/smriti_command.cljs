@@ -78,8 +78,8 @@
 
    `client-request-id` is the capture id: Smriti deduplicates one User's
    submissions by it, so an automatic retry of this same body cannot create
-   a second Entry. `group-id` is the snapshotted destination, or \"\" for
-   Private. Both come from the submitted snapshot, which stays frozen
+   a second Entry. `group-id` is the snapshotted destination and is omitted
+   for Private. Both come from the submitted snapshot, which stays frozen
    across retries; a corrected failed message updates only its snapshot
    destination.
 
@@ -89,13 +89,14 @@
    no final text, because the command creates an entry from text only."
   [request]
   (when-let [text (final-text request)]
-    (cond-> {"command/name" "journal/create-entry"
-             "text" text
-             "group-id" (or (some-> (submitted-group-id request) str str/trim not-empty) "")
-             "client-request-id" (str (:id request))
-             "tags" ["shruti" "todo"]}
-      (not (str/blank? (str (:occurred-at request))))
-      (assoc "created-at" (:occurred-at request)))))
+    (let [group-id (some-> (submitted-group-id request) str str/trim not-empty)]
+      (cond-> {"command/name" "journal/create-entry"
+               "text" text
+               "client-request-id" (str (:id request))
+               "tags" ["shruti" "todo"]}
+        group-id (assoc "group-id" group-id)
+        (not (str/blank? (str (:occurred-at request))))
+        (assoc "created-at" (:occurred-at request))))))
 
 (defn- group-entry [group]
   (when-let [id (some-> (:id group) str not-empty)]

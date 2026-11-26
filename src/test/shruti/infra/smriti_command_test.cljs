@@ -26,7 +26,6 @@
 (deftest maps-a-capture-to-a-journal-create-entry-command
   (is (= {"command/name" "journal/create-entry"
           "text" "Buy 20kg potatoes tomorrow."
-          "group-id" ""
           "client-request-id" "f38b1d22-c4cc-4c0a-8120-8ef4e3f70b51"
           "tags" ["shruti" "todo"]
           "created-at" "2026-07-27T12:30:00.000Z"}
@@ -74,15 +73,15 @@
              (get (command/capture->command (capture/retry failed 0))
                   "client-request-id"))))))
 
-(deftest private-sends-an-empty-group-id
+(deftest private-omits-the-group-id
   (let [sent (reviewed-and-sent nil "A private thought")]
-    (is (= "" (get (command/capture->command sent) "group-id")))
-    (testing "a deliberately Private reassignment also sends empty"
+    (is (not (contains? (command/capture->command sent) "group-id")))
+    (testing "a deliberately Private reassignment also omits the Group"
       (let [failed (capture/reject (reviewed-and-sent "group-a" "Moved")
                                    {:message "Not a member"})]
-        (is (= "" (get (command/capture->command
-                        (capture/reassign failed nil 0))
-                       "group-id")))))))
+        (is (not (contains? (command/capture->command
+                             (capture/reassign failed nil 0))
+                            "group-id")))))))
 
 (deftest a-new-entry-after-conflict-gets-a-fresh-idempotency-key
   (let [sent (reviewed-and-sent "group-a" "Repeat me")
